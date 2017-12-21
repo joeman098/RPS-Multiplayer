@@ -10,9 +10,13 @@
   firebase.initializeApp(config); 
 
 
-  var player1 
-  var player2
 
+  var STATE = {
+    OPEN: 1,
+    JOINED: 2,
+    PLAYING: 3,
+    FINISHED: 4,
+  }
 
 function newAccount(){
   var displayName = $("#userName").val().trim();
@@ -54,10 +58,62 @@ function onLogIn(){
     if(user){
       var displayName = user.displayName;
       var email = user.email;
-      // var profiles = ("welcome " + displayName  " " + email);
       $("#userProfile").html(displayName);
-    }
+
+
+      var playerref = firebase.database().ref("/game");
+     playerref.on("value",function(snapshot){
+
+  if(snapshot.val().player1.name){
+    var player1 = snapshot.val().player1.name;
+    $("#player1Id").text(player1);
+    console.log(player1);
+    if(displayName === player1){
+
+       
+           $("#rps").append($("<button>").text("rock").attr("id","rock"));
+           $("#rps").append($("<button>").text("paper").attr("id","paper"));
+           $("#rps").append($("<button>").text("sicsors").attr("id","sicsors"));
+            $("#rock").on("click", function(){
+              var value = $(this).text();
+              console.log(value);
+            })
+             $("#paper").on("click", function(){
+              var value = $(this).text();
+              console.log(value);
+            })
+              $("#sicsors").on("click", function(){
+              var value = $(this).text();
+              console.log(value);
+            })
+              var ref = firebase.database().ref("/game");
+              
+
+
+
+
+      }
+  }
+
+    if(snapshot.val().player2.name){
+  var player2 = snapshot.val().player2.name;
+  $("#player2Id").text(player2);
+  }
+  });
+
+
+
+
+
+
+
+
+//endifonlogin
+}
      
+
+
+
     
 
   });
@@ -80,6 +136,61 @@ function sendChat(){
   });
 };
 
+function gameset1(){
+  ref = firebase.database().ref("/game/player1");
+  playerID = $("#player1Button").attr("data-name");
+  console.log(playerID);
+
+  ref.set({
+    name: firebase.auth().currentUser.displayName,
+    playerID: playerID
+  });
+};
+function gameset2(){
+  ref = firebase.database().ref("/game/player2");
+  playerID = $("#player2Button").attr("data-name");
+  console.log(playerID);
+
+  ref.set({
+    name: firebase.auth().currentUser.displayName,
+    playerID: playerID
+  });
+};
+function gameclear(){
+  firebase.database().ref("/game/player2").remove();
+  firebase.database().ref("/game/player1").remove();
+};
+
+
+// function updateName(){
+
+// }
+
+
+// function creategame(){
+//   ref = firebase.database().ref("/games");
+//   var user = firebase.auth().currentUser ;
+//   var currentGame ={
+//     creator:{uid: user.uid, displayName: user.displayName},
+//     state: STATE.OPEN,
+//   };
+//   ref.push().set(currentGame);
+// };
+
+// function joinGame(key){
+//   var user = firebase.auth().currentUser ;
+//   var gameref = ref.child(key);
+//   gameref.transaction(function(gamee){
+//     if(!game.joiner){
+//       game.state = STATE.PLAYING;
+//       game.joiner = {uid: user.uid, displayName: user.displayName};
+//     }
+//   });
+
+// };
+
+
+
 $(document).ready(function(){
 
 $("#registerButton").on("click", function(event){
@@ -101,6 +212,20 @@ $("#chatBoxSubmit").on("click",function(event){
   sendChat();
 })
 
+$("#player1Button").on("click",function(){
+  alert("test");
+  // updateName();
+  gameset1();
+});
+$("#player2Button").on("click",function(){
+  alert("test");
+  gameset2();
+});
+$("#cleargame").on("click",function(){
+gameclear();
+});
+
+
 var chatref = firebase.database().ref("/chat"); 
   chatref.on("child_added",function(snapshot){
     var message = snapshot.val();
@@ -108,7 +233,16 @@ var chatref = firebase.database().ref("/chat");
     $("#chat").append(addChatMessage);
   });
 
+
 onLogIn();
+
+
+
+
+
+
+
+
 
 //end ready 
 });
