@@ -60,6 +60,8 @@ function onLogIn(){
       var email = user.email;
       $("#userProfile").html(displayName);
 
+      var value1
+      var value2
 
       var playerref = firebase.database().ref("/game");
      playerref.on("value",function(snapshot){
@@ -75,18 +77,18 @@ function onLogIn(){
            $("#rps").append($("<button>").text("paper").attr("id","paper"));
            $("#rps").append($("<button>").text("sicsors").attr("id","sicsors"));
             $("#rock").on("click", function(){
-              var value = $(this).text();
-              console.log(value);
+              value1 = $(this).text();
+              console.log(value1);
             })
              $("#paper").on("click", function(){
-              var value = $(this).text();
-              console.log(value);
+              value1 = $(this).text();
+              console.log(value1);
             })
               $("#sicsors").on("click", function(){
-              var value = $(this).text();
-              console.log(value);
+              value1 = $(this).text();
+              console.log(value1);
             })
-              var ref = firebase.database().ref("/game");
+              
               
 
 
@@ -102,6 +104,16 @@ function onLogIn(){
   });
 
 
+function gameapick(){
+  ref = firebase.database().ref("/game");
+ 
+  console.log(messageField);
+
+  ref.push().set({
+    name: firebase.auth().currentUser.displayName,
+    message: messageField
+  });
+};
 
 
 
